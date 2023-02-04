@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Name of custom config file
+readonly CUSTOM_CONFIG_FILE_NAME="config.sh"
+
+# Change working directory to place where this script is saved (useful when
+# running from CRON)
+cd "$(dirname "$0")"
+
+source base_config.sh
+
+if [[ -f "${CUSTOM_CONFIG_FILE_NAME}" ]]; then
+	source "${CUSTOM_CONFIG_FILE_NAME}"
+fi
+
+for cleanup_path in "${CLEANUP_PATHS[@]}"
+do
+  printf "Cleaning \"${cleanup_path}\" "
+  for filename_pattern in "${FILENAME_PATTERNS[@]}"
+  do
+    find "${cleanup_path}" -type f -name "${filename_pattern}" -delete
+    printf "."
+  done
+  echo "" # New line
+done
